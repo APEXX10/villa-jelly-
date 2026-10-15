@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Villa Jelly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --flavor: #19e3d2;
+    --flavor2: #ff4fd8;
+    --ink: #1b1530;
+    --muted: #6b6485;
+    --glass: rgba(255, 255, 255, 0.62);
+    --glass-line: rgba(255, 255, 255, 0.85);
+    --btn: #1b1530;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #1b1530; color: var(--ink);
+    font-family: Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+
+  /* ---------- hero copy ---------- */
+  .hero { position: fixed; left: 40px; top: 40px; max-width: 300px; pointer-events: none; z-index: 2; }
+  .eyebrow { font-size: 10px; letter-spacing: .28em; text-transform: uppercase; font-weight: 600; color: var(--ink); opacity: .7; }
+  h1 { font-family: "Instrument Serif", serif; font-style: italic; font-weight: 400; font-size: clamp(56px, 7vw, 96px);
+    line-height: .86; margin: 14px 0 16px; letter-spacing: -0.02em; }
+  h1 .jelly { background: linear-gradient(100deg, var(--flavor), var(--flavor2), #ffd34f, var(--flavor));
+    background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: shimmer 6s linear infinite; filter: drop-shadow(0 4px 18px color-mix(in srgb, var(--flavor) 45%, transparent)); }
+  @keyframes shimmer { to { background-position: 300% 0; } }
+  .hero p { font-size: 13px; line-height: 1.55; color: var(--ink); opacity: .78; margin: 0; max-width: 240px; }
+
+  .howto { position: fixed; left: 40px; bottom: 36px; max-width: 360px; z-index: 2; pointer-events: none; }
+  .howto .big { font-family: "Instrument Serif", serif; font-size: 22px; margin: 8px 0 6px; }
+  .howto .big i { color: color-mix(in srgb, var(--flavor) 70%, var(--ink)); }
+  .howto small { font-size: 11px; line-height: 1.6; opacity: .7; display: block; }
+  kbd { font-family: Inter, sans-serif; font-size: 10px; padding: 1px 5px; border-radius: 4px; background: rgba(255,255,255,.7); border: 1px solid rgba(0,0,0,.08); }
+
+  .live { position: fixed; right: 28px; top: 24px; z-index: 3; display: flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 600; letter-spacing: .06em; padding: 8px 14px; border-radius: 999px;
+    background: var(--glass); border: 1px solid var(--glass-line); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  .live .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--flavor); box-shadow: 0 0 10px var(--flavor); animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse { 50% { transform: scale(.6); opacity: .5; } }
+
+  /* ---------- control panel ---------- */
+  #panel { position: fixed; right: 28px; top: 70px; width: 272px; max-height: calc(100% - 96px); overflow-y: auto; z-index: 3;
+    background: var(--glass); border: 1px solid var(--glass-line); border-radius: 18px; padding: 6px 16px 14px;
+    backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4);
+    box-shadow: 0 20px 60px rgba(40, 10, 80, .25); scrollbar-width: thin; }
+  .sec { padding: 12px 0; border-bottom: 1px solid rgba(27, 21, 48, .08); }
+  .sec:last-child { border-bottom: 0; }
+  .lbl { font-size: 9.5px; letter-spacing: .24em; font-weight: 700; text-transform: uppercase; opacity: .55; margin-bottom: 9px; display: flex; justify-content: space-between; }
+  .lbl span { letter-spacing: .04em; text-transform: none; font-weight: 600; opacity: .9; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 6px; }
+  .grid3 + .grid3 { margin-top: 6px; }
+  .act.hot { background: linear-gradient(135deg, #ff7a1a, #ff2d6f); }
+  .act.soft { background: rgba(27,21,48,.1); color: var(--ink); }
+  .seg.two { grid-template-columns: 1fr 1.6fr; }
+  .count { flex-wrap: wrap; gap: 4px 10px; }
+  #scene.finger { cursor: crosshair; }
+  button { font: inherit; cursor: pointer; border: 0; }
+  .act { background: var(--btn); color: #fff; font-size: 11px; font-weight: 600; padding: 9px 4px; border-radius: 9px; line-height: 1.15;
+    transition: transform .15s, box-shadow .2s, background .2s; }
+  .act:hover { transform: translateY(-1px); box-shadow: 0 6px 16px color-mix(in srgb, var(--flavor) 50%, transparent); }
+  .act:active { transform: scale(.95); }
+  .act.magic { background: linear-gradient(120deg, #ff4fd8, #7a5cff, #19e3d2); background-size: 200% 100%; animation: shimmer 3s linear infinite; }
+  .count { margin-top: 9px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+  .count b { color: var(--ink); }
+
+  .swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .sw { background: rgba(255,255,255,.55); border: 1.5px solid transparent; border-radius: 10px; padding: 7px 2px 6px; display: flex; flex-direction: column;
+    align-items: center; gap: 5px; font-size: 9.5px; font-weight: 600; color: var(--ink); transition: border-color .2s, transform .15s; }
+  .sw:hover { transform: translateY(-1px); }
+  .sw i { width: 18px; height: 18px; border-radius: 6px; display: block; box-shadow: inset 0 -3px 6px rgba(0,0,0,.18), 0 2px 8px rgba(0,0,0,.12); }
+  .sw.on { border-color: var(--ink); background: #fff; }
+
+  .seg { display: grid; grid-template-columns: repeat(3, 1fr); background: rgba(27,21,48,.08); border-radius: 10px; padding: 3px; }
+  .seg button { background: transparent; font-size: 11px; font-weight: 600; padding: 7px 0; border-radius: 8px; color: var(--ink); }
+  .seg button.on { background: var(--btn); color: #fff; }
+
+  .slider { margin-bottom: 10px; }
+  .slider:last-child { margin-bottom: 0; }
+  .slider label { display: flex; justify-content: space-between; font-size: 11px; font-weight: 500; margin-bottom: 4px; }
+  .slider label output { color: var(--muted); font-variant-numeric: tabular-nums; }
+  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: 4px; outline: none;
+    background: linear-gradient(90deg, var(--flavor) var(--p, 50%), rgba(27,21,48,.12) var(--p, 50%)); }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; border-radius: 5px; background: #fff; border: 2px solid var(--ink); cursor: pointer; }
+  input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 5px; background: #fff; border: 2px solid var(--ink); cursor: pointer; }
+
+  .toggles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .tg { background: rgba(255,255,255,.55); font-size: 11px; font-weight: 600; padding: 8px 0; border-radius: 9px; color: var(--muted); border: 1.5px solid transparent; }
+  .tg.on { color: var(--ink); border-color: var(--ink); background: #fff; }
+
+  #panelToggle { display: none; }
+
+  .toast { position: fixed; left: 50%; top: 22px; transform: translate(-50%, -20px); opacity: 0; z-index: 4; pointer-events: none;
+    background: var(--btn); color: #fff; font-size: 12px; font-weight: 600; padding: 9px 16px; border-radius: 999px; transition: .35s; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  #loader { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; background: radial-gradient(circle at 50% 40%, #ff8ad8, #7a5cff 55%, #1b1530);
+    color: #fff; font-family: "Instrument Serif", serif; font-style: italic; font-size: 42px; transition: opacity .8s; }
+  #loader.gone { opacity: 0; pointer-events: none; }
+
+  /* night mode text */
+  body.night .hero, body.night .howto { color: #fff; }
+  body.night .hero .eyebrow, body.night .hero p, body.night h1 { color: #fff; }
+  body.night kbd { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.2); color: #fff; }
+
+  @media (max-width: 760px) {
+    .hero { left: 16px; top: 18px; }
+    h1 { font-size: 52px; margin: 8px 0 8px; }
+    .hero p { display: none; }
+    .howto { display: none; }
+    .live { right: 16px; top: 16px; }
+    #panel { left: 16px; right: 16px; width: auto; top: auto; bottom: 16px; max-height: 52%; transform: translateY(calc(100% + 30px));
+      transition: transform .35s cubic-bezier(.2,.9,.3,1.2); }
+    #panel.open { transform: none; }
+    #panelToggle { display: block; position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 4;
+      background: var(--btn); color: #fff; font-size: 13px; font-weight: 600; padding: 12px 22px; border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.3); transition: bottom .35s; }
+    #panelToggle.up { bottom: calc(52% + 26px); }
+  }
+</style>
+</head>
+<body>
+<div id="loader">Villa Jelly…</div>
+<canvas id="scene"></canvas>
+
+<header class="hero">
+  <div class="eyebrow">A fantasy diorama · No. 05</div>
+  <h1>Villa<br><span class="jelly">Jelly.</span></h1>
+  <p>บ้านสีขาว ปาล์มสิบต้น เรือที่ไม่เคยออกจากฝั่ง และทะเลเยลลี่ที่ดุ๊กดิ๊กกลับมาทุกครั้งที่โดนแตะ</p>
+</header>
+
+<div class="howto">
+  <div class="eyebrow">How to play</div>
+  <div class="big">Stir the sea. <i>Tip the block.</i> Throw a duck.</div>
+  <small>ลากเพื่อหมุน · จับเป็ด/ของแล้วเหวี่ยงโยน · คลิกน้ำให้เป็นระลอก · ดับเบิลคลิกเพื่อหย่อนเป็ด<br>
+    <kbd>D</kbd> duck <kbd>B</kbd> ball <kbd>C</kbd> crate <kbd>R</kbd> rock <kbd>W</kbd> wave <kbd>S</kbd> stir <kbd>T</kbd> tip <kbd>J</kbd> bounce <kbd>X</kbd> meteor <kbd>M</kbd> magic <kbd>1–8</kbd> flavour</small>
+</div>
+
+<div class="live"><span class="dot"></span><span id="liveText">WOBBLY · LIVE</span></div>
+
+<aside id="panel">
+  <div class="sec">
+    <div class="lbl">The sea</div>
+    <div class="grid4">
+      <button class="act" data-act="duck">🦆<br>Duck</button>
+      <button class="act" data-act="ball">⚽<br>Ball</button>
+      <button class="act" data-act="crate">📦<br>Crate</button>
+      <button class="act" data-act="rock">🪨<br>Rock</button>
+    </div>
+    <div class="count" id="counts"></div>
+  </div>
+
+  <div class="sec">
+    <div class="lbl">Forces</div>
+    <div class="grid3">
+      <button class="act" data-act="wave">🌊 Big<br>wave</button>
+      <button class="act" data-act="stir">🌀 Stir<br>sea</button>
+      <button class="act" data-act="tip">↯ Tip<br>block</button>
+    </div>
+    <div class="grid3">
+      <button class="act" data-act="bounce">⤒ Jelly<br>bounce</button>
+      <button class="act hot" data-act="meteor">☄ Meteor</button>
+      <button class="act magic" data-act="magic">✦ Magic<br>burst</button>
+    </div>
+    <div class="grid2">
+      <button class="act soft" data-act="wobble">Wobble</button>
+      <button class="act soft" data-act="clear">Clear all</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="lbl">Drag mode <span>จับของได้ทุกโหมด</span></div>
+    <div class="seg two">
+      <button data-tool="rotate" class="on">↻ Rotate</button>
+      <button data-tool="finger">☝ Finger in water</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="lbl">Flavour <span id="flavorName">Lagoon</span></div>
+    <div class="swatches" id="swatches"></div>
+  </div>
+
+  <div class="sec">
+    <div class="lbl">Sky</div>
+    <div class="seg" id="sky">
+      <button data-sky="day" class="on">Day</button>
+      <button data-sky="sunset">Sunset</button>
+      <button data-sky="night">Night</button>
+    </div>
+    <div class="lbl" style="margin-top:12px">Weather</div>
+    <div class="seg">
+      <button data-weather="clear" class="on">☀ Clear</button>
+      <button data-weather="rain">🌧 Rain</button>
+      <button data-weather="storm">⛈ Storm</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="slider"><label>Jelly wobble <output id="o-wobble"></output></label><input id="wobble" type="range" min="0" max="100" value="60"></div>
+    <div class="slider"><label>Wave height <output id="o-waves"></output></label><input id="waves" type="range" min="0" max="100" value="45"></div>
+    <div class="slider"><label>Trade wind <output id="o-wind"></output></label><input id="wind" type="range" min="0" max="100" value="40"></div>
+    <div class="slider"><label>Sparkle <output id="o-sparkle"></output></label><input id="sparkle" type="range" min="0" max="100" value="60"></div>
+  </div>
+
+  <div class="sec">
+    <div class="toggles">
+      <button class="tg on" data-tg="spin">Spin</button>
+      <button class="tg on" data-tg="boat">Boat</button>
+      <button class="tg on" data-tg="fish">Fish</button>
+      <button class="tg" data-tg="sound">Sound</button>
+    </div>
+  </div>
+</aside>
+<button id="panelToggle">✦ Controls</button>
+<div class="toast" id="toast"></div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script type="module" src="main.js"></script>
+</body>
+</html>
